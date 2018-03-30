@@ -6,16 +6,23 @@
   "license": "MIT",
   "devDependencies": {
     "@types/jest": "^22.2.2",
+    "html-webpack-plugin": "^3.1.0",
     "jest": "^22.4.3",
     "prettier": "^1.11.1",
     "ts-jest": "^22.4.2",
-    "typescript": "^2.8.1"
+    "ts-loader": "^4.1.0",
+    "typescript": "^2.8.1",
+    "webpack": "^4.4.1",
+    "webpack-cli": "^2.0.13",
+    "webpack-dev-server": "^3.1.1"
   },
   "scripts": {
-    "prettier": "prettier --write '**/*.ts'",
-    "prettier:check": "prettier -l '**/*.ts'",
+    "prettier": "prettier --write '**/*.{ts,tsx,js,jsx}'",
+    "prettier:check": "prettier -l '**/*.{ts,tsx,js,jsx}'",
     "test": "jest",
-    "build": "tsc -p ."
+    "build": "webpack --context client --config client/webpack.config.js --mode development",
+    "dist": "yarn build --mode production",
+    "serve": "webpack-dev-server --config client/webpack.config.js"
   },
   "jest": {
     "transform": {

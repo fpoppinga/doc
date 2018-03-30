@@ -1,7 +1,7 @@
 [*]
 insert_final_newline = true
 
-[*.ts]
+[*.{ts,tsx,js,jsx}]
 indent_size = 4
 indent_style = space
 
