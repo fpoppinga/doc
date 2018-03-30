@@ -11,6 +11,25 @@ describe("Doc", () => {
         expect(doc.cursors.get("1")).toEqual({ position: 1 });
     });
 
+    describe("navigation", () => {
+        it("can move the cursor", () => {
+            const doc = new Doc("...", new Map([["cursor", { position: 1 }]]));
+
+            const movements = [
+                { distance: 0, expected: 1 },
+                { distance: 52, expected: 3 },
+                { distance: -1, expected: 0 },
+                { distance: -100, expected: 0 }
+            ];
+
+            for (const { distance, expected } of movements) {
+                expect(
+                    doc.moveCursor("cursor", distance).cursors.get("cursor")
+                ).toEqual({ position: expected });
+            }
+        });
+    });
+
     describe("editing", () => {
         it("can immutably insert text at a cursor", () => {
             const doc = new Doc(
@@ -77,6 +96,19 @@ describe("Doc", () => {
                 ["cursor", { position: 4 }],
                 ["inside", { position: 4 }],
                 ["after", { position: 12 }]
+            ]);
+        });
+
+        it("can delete more text than there actually is.", () => {
+            const doc = new Doc(
+                "This is.",
+                new Map([["cursor", { position: 4 }]])
+            );
+
+            const nextDoc = doc.deleteAt("cursor", 42);
+            expect(nextDoc.text).toBe(" is.");
+            expect([...nextDoc.cursors.entries()]).toEqual([
+                ["cursor", { position: 0 }]
             ]);
         });
     });

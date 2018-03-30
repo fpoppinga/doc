@@ -3,7 +3,11 @@ export interface Cursor {
 }
 
 export class Doc {
-    constructor(readonly text: string, readonly cursors: Map<string, Cursor>) {}
+    readonly cursors: Map<string, Cursor>;
+
+    constructor(readonly text: string, cursors: Map<string, Cursor>) {
+        this.cursors = this.normalizeCursors(cursors);
+    }
 
     insertAt(cursorId: string, text: string): Doc {
         const cursor = this.getOrCreateCursor(cursorId);
@@ -25,13 +29,22 @@ export class Doc {
         );
     }
 
-    moveCursors(after: number, length: number): Map<string, Cursor> {
+    moveCursor(cursorId: string, distance: number): Doc {
+        const cursor = this.getOrCreateCursor(cursorId);
+        const newCursors = new Map(this.cursors.entries());
+
+        newCursors.set(cursorId, { position: cursor.position + distance });
+
+        return new Doc(this.text, newCursors);
+    }
+
+    private moveCursors(after: number, length: number): Map<string, Cursor> {
         let position = after;
         const step = length >= 0 ? 1 : -1;
 
         const result = new Map(this.cursors.entries());
 
-        while (position !== after + length || (position === 0 && step < 0)) {
+        while (position !== after + length) {
             for (const [, cursor] of result) {
                 if (cursor.position >= position) {
                     cursor.position += step;
@@ -60,5 +73,25 @@ export class Doc {
         const afterCursor = this.text.slice(cursor.position, this.text.length);
 
         return [beforeCursor, afterCursor];
+    }
+
+    private normalizeCursors(
+        cursors: Map<string, Cursor>
+    ): Map<string, Cursor> {
+        const normalizedCursors: [string, Cursor][] = [
+            ...cursors.entries()
+        ].map(entry => {
+            const [key, cursor] = entry;
+
+            let position = cursor.position;
+            if (position < 0) {
+                position = 0;
+            } else if (position > this.text.length) {
+                position = this.text.length;
+            }
+            return [key, { position: position }] as [string, Cursor];
+        });
+
+        return new Map(normalizedCursors);
     }
 }
