@@ -58,7 +58,7 @@ describe("Document", () => {
             expect(typeSpy).toHaveBeenCalledWith("\n");
         });
 
-        it("deletes text, when backspace is hit", () => {
+        it("deletes text, when backspace or delete is hit", () => {
             const doc = new Doc("Aha.", new Map());
             const deleteSpy = jest.fn();
             const context = shallow(
@@ -72,6 +72,9 @@ describe("Document", () => {
 
             context.find(".content").simulate("keydown", { key: "Backspace" });
             expect(deleteSpy).toHaveBeenCalledWith(1);
+
+            context.find(".content").simulate("keydown", { key: "Delete" });
+            expect(deleteSpy).toHaveBeenCalledWith(-1);
         });
 
         it("moves the caret with the arrow keys", () => {
