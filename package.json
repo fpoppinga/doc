@@ -27,7 +27,7 @@
   "scripts": {
     "prettier": "prettier --write '**/*.{ts,tsx,js,jsx}'",
     "prettier:check": "prettier -l '**/*.{ts,tsx,js,jsx}'",
-    "test": "jest",
+    "test": "jest --coverage",
     "build": "webpack --config client/webpack.config.js --mode development",
     "dist": "yarn build --mode production",
     "serve": "webpack-dev-server --config client/webpack.config.js --mode development"
