@@ -1,6 +1,6 @@
-import { h, FunctionalComponent } from "preact";
-import { Doc } from "../../lib/doc";
-import { Cursor } from "./cursor";
+import { h, FunctionalComponent, Component } from "preact";
+import { Doc, Cursor } from "../../lib/doc";
+import { VisualCursor } from "./cursor";
 
 export interface DocumentProps {
     readonly doc: Doc;
@@ -14,41 +14,75 @@ const arrowKeys: Map<string, number> = new Map([
     ["ArrowRight", +1]
 ]);
 
-export const DisconnectedDocument: FunctionalComponent<DocumentProps> = (
-    props?: DocumentProps
-) => {
-    if (!props) return <div />;
+export class DisconnectedDocument extends Component<DocumentProps, {}> {
+    constructor(props: DocumentProps) {
+        super(props);
+    }
 
-    function handleKeyDown(e: KeyboardEvent) {
+    private handleKeyDown(e: KeyboardEvent) {
         const key = e.key;
-        console.info("Keydown!", key);
         if (arrowKeys.has(key)) {
-            return props && props.onCaretMove(arrowKeys.get(key)!);
+            return this.props.onCaretMove(arrowKeys.get(key)!);
         }
 
         if (key === "Backspace") {
-            return props && props.onDelete(1);
+            return this.props.onDelete(1);
         }
 
         if (key === "Delete") {
-            return props && props.onDelete(-1);
+            return this.props.onDelete(-1);
+        }
+
+        if (key === "Enter") {
+            return this.props.onType("\n");
         }
 
         if (key.length === 1) {
-            return props && props.onType(key);
+            return this.props.onType(key);
         }
 
         e.preventDefault();
     }
 
-    return (
-        <div class="container">
-            <div class="content" tabIndex={0} onKeyDown={handleKeyDown}>
-                {props.doc.text}
+    private splitAtCursors(): (string | JSX.Element)[] {
+        const sortedCursors = [...this.props.doc.cursors.entries()].sort(
+            (a, b) => a[1].position - b[1].position
+        );
+        const segments = [];
+        const chars = this.props.doc.text.split("");
+        let i = 0;
+        for (const [, cursor] of sortedCursors) {
+            let currentSegment = "";
+            while (i < cursor.position && i < chars.length) {
+                currentSegment += chars[i];
+                i++;
+            }
+            segments.push(currentSegment);
+            segments.push(<VisualCursor {...cursor} />);
+        }
+
+        let lastSegment = "";
+        while (i < chars.length) {
+            lastSegment += chars[i];
+            i++;
+        }
+        segments.push(lastSegment);
+        return segments;
+    }
+
+    render() {
+        const segments = this.splitAtCursors();
+
+        return (
+            <div class="container">
+                <pre
+                    class="content"
+                    tabIndex={0}
+                    onKeyDown={this.handleKeyDown.bind(this)}
+                >
+                    {segments}
+                </pre>
             </div>
-            {[...props.doc.cursors.values()].map(cursor => (
-                <Cursor {...cursor} />
-            ))}
-        </div>
-    );
-};
+        );
+    }
+}

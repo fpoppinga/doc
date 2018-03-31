@@ -12,9 +12,11 @@ export interface EditorState {
     readonly doc: Doc;
 }
 
+const cursorId = v4();
+
 const initialState: EditorState = {
-    cursor: v4(),
-    doc: new Doc("Hello, world!", new Map())
+    cursor: cursorId,
+    doc: new Doc("Hello, world!", new Map([[cursorId, { position: 0 }]]))
 };
 
 export function editorReducer(

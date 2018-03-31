@@ -1,8 +1,9 @@
 import { connect } from "preact-redux";
-import { DisconnectedDocument } from "../components/document";
+import { DisconnectedDocument, DocumentProps } from "../components/document";
 import { Dispatch } from "redux";
 import { RootState } from "../reducers";
 import { deleteText, moveCaret, typeText } from "../actions/documentActions";
+import ComponentConstructor = preact.ComponentConstructor;
 
 const mapStateToProps = (state: RootState) => ({
     doc: state.editor.doc
@@ -21,5 +22,5 @@ const mapDispatchToProps = (dispatch: Dispatch<RootState>) => ({
 });
 
 export const Document = connect(mapStateToProps, mapDispatchToProps)(
-    DisconnectedDocument
+    DisconnectedDocument as ComponentConstructor<DocumentProps, {}>
 );
