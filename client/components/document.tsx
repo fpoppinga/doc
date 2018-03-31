@@ -58,7 +58,7 @@ export class DisconnectedDocument extends Component<DocumentProps, {}> {
                 i++;
             }
             segments.push(currentSegment);
-            segments.push(<VisualCursor {...cursor} />);
+            segments.push(<VisualCursor color={"green"} name={cursor.name} />);
         }
 
         let lastSegment = "";
@@ -75,13 +75,15 @@ export class DisconnectedDocument extends Component<DocumentProps, {}> {
 
         return (
             <div class="container">
-                <pre
-                    class="content"
-                    tabIndex={0}
-                    onKeyDown={this.handleKeyDown.bind(this)}
-                >
-                    {segments}
-                </pre>
+                <div class="document">
+                    <pre
+                        class="content"
+                        tabIndex={0}
+                        onKeyDown={this.handleKeyDown.bind(this)}
+                    >
+                        {segments}
+                    </pre>
+                </div>
             </div>
         );
     }

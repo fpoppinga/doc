@@ -12,3 +12,5 @@ render(
     </Provider>,
     document.body
 );
+
+require("./style/style.scss");

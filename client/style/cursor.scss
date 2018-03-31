@@ -1,0 +1,50 @@
+@import "config";
+
+.cursor {
+  position: relative;
+  display: inline-block;
+  top: $font-size;
+  font-size: $font-size / 1.5;
+  width: 0;
+  text-align: center;
+
+  &:before {
+    content: "";
+    position: absolute;
+    top: -$font-size;
+    bottom: $font-size - 2px;
+    width: 1px;
+    margin-left: 50%;
+    background-color: var(--user-color);
+  }
+
+  &.blinking {
+    &:before {
+      animation: 1s blink step-end infinite;
+    }
+  }
+
+  label {
+    display: block;
+    width: $max-label-width;
+    margin-left: -($max-label-width / 2);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    background-color: var(--user-color);
+    border-radius: $font-size/2;
+
+    .name {
+      color: var(--user-color);
+      filter: invert(100%);
+    }
+  }
+}
+
+@keyframes blink {
+  from, to {
+    background-color: transparent;
+  }
+  50% {
+    background-color: var(--user-color);
+  }
+}

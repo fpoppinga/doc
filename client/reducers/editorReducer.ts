@@ -16,7 +16,10 @@ const cursorId = v4();
 
 const initialState: EditorState = {
     cursor: cursorId,
-    doc: new Doc("Hello, world!", new Map([[cursorId, { position: 0 }]]))
+    doc: new Doc(
+        "Hello, world! Lorem Ipsum!",
+        new Map([[cursorId, { position: 0, name: "Finn" }]])
+    )
 };
 
 export function editorReducer(

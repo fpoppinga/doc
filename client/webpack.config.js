@@ -1,8 +1,16 @@
 const path = require("path");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
+const ExtractTextPlugin = require("extract-text-webpack-plugin");
+
+const extractSass = new ExtractTextPlugin({
+    filename: "[name].css",
+    disable: process.env.NODE_ENV === "development"
+});
 
 module.exports = {
-    entry: "./index.tsx",
+    entry: {
+        bundle: "./index.tsx"
+    },
     context: __dirname,
     module: {
         rules: [
@@ -10,6 +18,13 @@ module.exports = {
                 test: /\.tsx?$/,
                 use: "ts-loader",
                 exclude: /node_modules/
+            },
+            {
+                test: /\.scss$/,
+                use: extractSass.extract({
+                    use: [{ loader: "css-loader" }, { loader: "sass-loader" }],
+                    fallback: "style-loader"
+                })
             }
         ]
     },
@@ -18,13 +33,15 @@ module.exports = {
         extensions: [".tsx", ".ts", ".js"]
     },
     output: {
-        filename: "bundle.js",
+        filename: "[name].js",
         path: path.resolve(__dirname, "../dist")
     },
     plugins: [
         new HtmlWebpackPlugin({
-            template: path.resolve(__dirname, "./index.html")
-        })
+            template: path.resolve(__dirname, "./index.html"),
+            css: "style.css"
+        }),
+        extractSass
     ],
     devServer: {
         contentBase: path.join(__dirname, "../dist"),

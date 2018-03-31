@@ -1,0 +1,27 @@
+@import "~material-shadows/material-shadows";
+
+.container {
+  margin: 0 auto;
+  width: 80%;
+  height: 100vh;
+
+  .document {
+    height: 100%;
+    padding: 1em;
+  }
+
+  .content {
+    @include z-depth();
+    height: 100%;
+    padding: 1em;
+    overflow-y: scroll;
+    word-wrap: break-word;
+    white-space: pre-wrap;
+
+    &:focus {
+      outline: none;
+    }
+  }
+
+}
+

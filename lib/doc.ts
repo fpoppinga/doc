@@ -1,4 +1,5 @@
 export interface Cursor {
+    name?: string;
     position: number;
 }
 
@@ -33,7 +34,10 @@ export class Doc {
         const cursor = this.getOrCreateCursor(cursorId);
         const newCursors = new Map(this.cursors.entries());
 
-        newCursors.set(cursorId, { position: cursor.position + distance });
+        newCursors.set(cursorId, {
+            ...cursor,
+            position: cursor.position + distance
+        });
 
         return new Doc(this.text, newCursors);
     }
@@ -89,7 +93,7 @@ export class Doc {
             } else if (position > this.text.length) {
                 position = this.text.length;
             }
-            return [key, { position: position }] as [string, Cursor];
+            return [key, { ...cursor, position: position }] as [string, Cursor];
         });
 
         return new Map(normalizedCursors);
