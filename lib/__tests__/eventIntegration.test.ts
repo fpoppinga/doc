@@ -1,23 +1,33 @@
-import { Command, DeleteCommand, MoveCommand, TypeCommand } from "../command";
+import {
+    Command,
+    CommandDto,
+    DeleteCommand,
+    MoveCommand,
+    TypeCommand
+} from "../command";
 import { Doc } from "../doc";
 import { aggregate } from "../aggregator";
 import { createEvent } from "../event";
 
 describe("EventIntegration", () => {
     test("Adding some text", () => {
-        const commands: Command[] = [
+        const commands: CommandDto[] = [
             {
                 id: "1",
                 cursorId: "Alice",
-                type: "TYPE",
-                char: "Aha!"
-            } as TypeCommand,
+                command: {
+                    type: "TYPE",
+                    char: "Aha!"
+                } as TypeCommand
+            },
             {
                 id: "2",
                 cursorId: "Bob",
-                type: "TYPE",
-                char: "Yes, "
-            } as TypeCommand
+                command: {
+                    type: "TYPE",
+                    char: "Yes, "
+                } as TypeCommand
+            }
         ];
 
         const initialState = new Doc("", new Map());
@@ -35,21 +45,27 @@ describe("EventIntegration", () => {
             {
                 id: "1",
                 cursorId: "Alice",
-                type: "TYPE",
-                char: "Aha!"
-            } as TypeCommand,
+                command: {
+                    type: "TYPE",
+                    char: "Aha!"
+                } as TypeCommand
+            },
             {
                 id: "2",
                 cursorId: "Bob",
-                type: "MOVE",
-                distance: 3
-            } as MoveCommand,
+                command: {
+                    type: "MOVE",
+                    distance: 3
+                } as MoveCommand
+            },
             {
                 id: "3",
                 cursorId: "Bob",
-                type: "DELETE",
-                length: 3
-            } as DeleteCommand
+                command: {
+                    type: "DELETE",
+                    length: 3
+                } as DeleteCommand
+            }
         ];
 
         const initialState = new Doc("", new Map());

@@ -7,7 +7,7 @@ describe("Doc", () => {
     });
 
     it("has cursors", () => {
-        const doc = new Doc("", new Map([["1", { position: 1 }]]));
+        const doc = new Doc("Bananas!", new Map([["1", { position: 1 }]]));
         expect(doc.cursors.get("1")).toEqual({ position: 1 });
     });
 

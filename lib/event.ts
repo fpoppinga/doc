@@ -1,5 +1,11 @@
 import { Doc } from "./doc";
-import { Command, DeleteCommand, MoveCommand, TypeCommand } from "./command";
+import {
+    Command,
+    CommandDto,
+    DeleteCommand,
+    MoveCommand,
+    TypeCommand
+} from "./command";
 
 export interface Event<T extends Command> {
     readonly command: T;
@@ -8,36 +14,38 @@ export interface Event<T extends Command> {
 }
 
 export class TypeEvent implements Event<TypeCommand> {
-    constructor(readonly command: TypeCommand) {}
+    constructor(readonly cursorId: string, readonly command: TypeCommand) {}
 
     apply(doc: Doc): Doc {
-        return doc.insertAt(this.command.cursorId, this.command.char);
+        return doc.insertAt(this.cursorId, this.command.char);
     }
 }
 
 export class DeleteEvent implements Event<DeleteCommand> {
-    constructor(readonly command: DeleteCommand) {}
+    constructor(readonly cursorId: string, readonly command: DeleteCommand) {}
 
     apply(doc: Doc): Doc {
-        return doc.deleteAt(this.command.cursorId, this.command.length);
+        return doc.deleteAt(this.cursorId, this.command.length);
     }
 }
 
 export class MoveEvent implements Event<MoveCommand> {
-    constructor(readonly command: MoveCommand) {}
+    constructor(readonly cursorId: string, readonly command: MoveCommand) {}
 
     apply(doc: Doc): Doc {
-        return doc.moveCursor(this.command.cursorId, this.command.distance);
+        return doc.moveCursor(this.cursorId, this.command.distance);
     }
 }
 
-export function createEvent(command: Command): Event<Command> {
+export function createEvent(commandDto: CommandDto): Event<Command> {
+    const { command, cursorId } = commandDto;
+
     switch (command.type) {
         case "DELETE":
-            return new DeleteEvent(command as DeleteCommand);
+            return new DeleteEvent(cursorId, command as DeleteCommand);
         case "TYPE":
-            return new TypeEvent(command as TypeCommand);
+            return new TypeEvent(cursorId, command as TypeCommand);
         case "MOVE":
-            return new MoveEvent(command as MoveCommand);
+            return new MoveEvent(cursorId, command as MoveCommand);
     }
 }

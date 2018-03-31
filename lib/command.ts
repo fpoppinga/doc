@@ -1,8 +1,6 @@
 export type CommandType = "TYPE" | "DELETE" | "MOVE";
 
 export interface Command {
-    readonly id: string;
-    readonly cursorId: string;
     readonly type: CommandType;
 }
 
@@ -19,4 +17,10 @@ export interface DeleteCommand extends Command {
 export interface MoveCommand extends Command {
     readonly type: "MOVE";
     readonly distance: number;
+}
+
+export interface CommandDto {
+    readonly id: string;
+    readonly cursorId: string;
+    readonly command: Command;
 }

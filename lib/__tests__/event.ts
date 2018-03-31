@@ -10,12 +10,10 @@ describe("TypeEvent", () => {
 
         const command: TypeCommand = {
             type: "TYPE",
-            id: "id",
-            char: "bananas!",
-            cursorId: "myCursor"
+            char: "bananas!"
         };
 
-        const event = new TypeEvent(command);
+        const event = new TypeEvent("myCursor", command);
         event.apply(doc);
 
         expect(doc.insertAt).toHaveBeenCalledWith("myCursor", "bananas!");
@@ -28,12 +26,10 @@ describe("DeleteEvent", () => {
 
         const command: DeleteCommand = {
             type: "DELETE",
-            id: "id",
-            cursorId: "myCursor",
             length: 42
         };
 
-        const event = new DeleteEvent(command);
+        const event = new DeleteEvent("myCursor", command);
         event.apply(doc);
 
         expect(doc.deleteAt).toHaveBeenCalledWith("myCursor", 42);
