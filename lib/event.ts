@@ -37,6 +37,10 @@ export class MoveEvent implements Event<MoveCommand> {
     }
 }
 
+export interface EventDto extends CommandDto {
+    readonly sequence: number;
+}
+
 export function createEvent(commandDto: CommandDto): Event<Command> {
     const { command, cursorId } = commandDto;
 

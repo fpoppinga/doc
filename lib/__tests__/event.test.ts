@@ -1,6 +1,6 @@
 import { Doc } from "../doc";
-import { DeleteCommand, TypeCommand } from "../command";
-import { DeleteEvent, TypeEvent } from "../event";
+import { DeleteCommand, MoveCommand, TypeCommand } from "../command";
+import { DeleteEvent, MoveEvent, TypeEvent } from "../event";
 
 jest.mock("../doc");
 
@@ -33,5 +33,21 @@ describe("DeleteEvent", () => {
         event.apply(doc);
 
         expect(doc.deleteAt).toHaveBeenCalledWith("myCursor", 42);
+    });
+});
+
+describe("MoveEvent", () => {
+    it("moves the cursor", () => {
+        const doc = new Doc("", new Map());
+
+        const command: MoveCommand = {
+            type: "MOVE",
+            distance: 42
+        };
+
+        const event = new MoveEvent("myCursor", command);
+        event.apply(doc);
+
+        expect(doc.moveCursor).toHaveBeenCalledWith("myCursor", 42);
     });
 });

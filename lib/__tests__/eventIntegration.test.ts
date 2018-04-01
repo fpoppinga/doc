@@ -41,7 +41,7 @@ describe("EventIntegration", () => {
     });
 
     test("Deleting some text", () => {
-        const commands: Command[] = [
+        const commands: CommandDto[] = [
             {
                 id: "1",
                 cursorId: "Alice",
@@ -76,5 +76,12 @@ describe("EventIntegration", () => {
             ["Alice", { position: 1 }],
             ["Bob", { position: 0 }]
         ]);
+    });
+
+    test("empty event list", () => {
+        const initialState = new Doc("", new Map());
+        const finalState = aggregate(initialState, []);
+
+        expect(finalState).toEqual(initialState);
     });
 });
