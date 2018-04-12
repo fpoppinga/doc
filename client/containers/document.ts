@@ -11,6 +11,7 @@ const mapStateToProps = (state: RootState) => ({
 
 const mapDispatchToProps = (dispatch: Dispatch<RootState>) => ({
     onCaretMove: (distance: number) => {
+        console.info("MOVE!");
         dispatch(moveCaret(distance));
     },
     onType: (char: string) => {

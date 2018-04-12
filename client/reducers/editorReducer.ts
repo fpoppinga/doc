@@ -5,6 +5,7 @@ import { EventStore } from "./eventStore";
 import { EventDto } from "../../lib/event";
 import { Action } from "redux";
 import { CommandAction } from "../actions/documentActions";
+import { EditorClient } from "../api/editorClient";
 
 export interface EditorState {
     readonly cursor: string;
@@ -40,11 +41,16 @@ export function editorReducer(
 
     switch (action.type) {
         case "COMMAND":
-            eventStore.optimisticUpdate({
-                id: v4(),
-                cursorId: state.cursor,
-                command: (action as CommandAction).command
-            });
+            const commandAction = action as CommandAction;
+
+            switch (commandAction.state) {
+                case "OPTIMISTIC":
+                    eventStore.optimisticUpdate(commandAction.payload);
+                    break;
+                case "REJECTED":
+                    eventStore.removeOptimisticEvent(commandAction.payload);
+                    break;
+            }
 
             return {
                 ...state,

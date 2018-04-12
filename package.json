@@ -5,8 +5,11 @@
   "author": "Finn Poppinga <finno.ger@gmail.com>",
   "license": "MIT",
   "devDependencies": {
+    "@types/body-parser": "^1.16.8",
+    "@types/express": "^4.11.1",
     "@types/jest": "^22.2.2",
     "@types/redux": "^3.6.0",
+    "@types/serve-static": "^1.13.1",
     "@types/uuid": "^3.4.3",
     "css-loader": "^0.28.11",
     "extract-text-webpack-plugin": "^4.0.0-beta.0",
@@ -28,9 +31,14 @@
     "prettier": "prettier --write '**/*.{ts,tsx,js,jsx}'",
     "prettier:check": "prettier -l '**/*.{ts,tsx,js,jsx}'",
     "test": "jest --coverage",
-    "build": "webpack --config client/webpack.config.js --mode development",
-    "dist": "yarn build --mode production",
-    "serve": "webpack-dev-server --config client/webpack.config.js --mode development"
+    "build:client": "webpack --config client/webpack.config.js --mode development",
+    "build:server": "tsc -p server",
+    "dist:client": "yarn build --mode production",
+    "build": "yarn build:server && yarn build:client",
+    "dist": "yarn build:server && yarn dist:client",
+    "serve": "webpack-dev-server --config client/webpack.config.js --mode development",
+    "start": "node build/server/server.js",
+    "clean": "rm -rf build dist coverage"
   },
   "jest": {
     "transform": {
@@ -44,13 +52,22 @@
       "jsx",
       "json",
       "node"
-    ]
+    ],
+    "globals": {
+      "ts-jest": {
+        "tsConfigFile": "server/tsconfig.json"
+      }
+    }
   },
   "dependencies": {
+    "body-parser": "^1.18.2",
+    "express": "^4.16.3",
     "material-shadows": "^3.0.1",
     "preact": "^8.2.7",
     "preact-redux": "^2.0.3",
     "redux": "^3.7.2",
+    "redux-thunk": "^2.2.0",
+    "serve-static": "^1.13.2",
     "uuid": "^3.2.1"
   }
 }

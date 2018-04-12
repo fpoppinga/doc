@@ -27,14 +27,18 @@ export class EventStore {
         this._optimisticEvents.push(command);
     }
 
+    removeOptimisticEvent(command: CommandDto) {
+        this._optimisticEvents = this._optimisticEvents.filter(
+            existingCmd => existingCmd.id !== command.id
+        );
+    }
+
     update(event: EventDto) {
         if (this.appliedEvents.find(e => e.id === event.id)) {
             return;
         }
 
-        this._optimisticEvents = this._optimisticEvents.filter(
-            c => c.id !== event.id
-        );
+        this.removeOptimisticEvent(event);
         this.appliedEvents.push(event);
     }
 
