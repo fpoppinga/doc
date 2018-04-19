@@ -99,6 +99,23 @@ describe("Doc", () => {
             ]);
         });
 
+        it("does not move the cursor, when there is no more text to delete", () => {
+            const cursors = new Map<string, Cursor>([
+                ["before", { position: 0 }],
+                ["cursor", { position: 12 }],
+                ["after", { position: 20 }]
+            ]);
+
+            const doc = new Doc("This usually is a test.", cursors);
+            const nextDoc = doc.deleteAt("cursor", 16);
+
+            expect([...nextDoc.cursors.entries()]).toEqual([
+                ["before", {position: 0}],
+                ["cursor", {position: 0}],
+                ["after", {position: 8}]
+            ])
+        });
+
         it("can delete more text than there actually is.", () => {
             const doc = new Doc(
                 "This is.",

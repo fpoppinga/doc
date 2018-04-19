@@ -24,9 +24,11 @@ export class Doc {
         const cursor = this.getOrCreateCursor(cursorId);
         const [beforeCursor, afterCursor] = this.sliceAt(cursor);
 
+        const deletionLength = Math.min(length, cursor.position);
+
         return new Doc(
-            beforeCursor.slice(0, cursor.position - length) + afterCursor,
-            this.moveCursors(cursor.position, -length)
+            beforeCursor.slice(0, cursor.position - deletionLength) + afterCursor,
+            this.moveCursors(cursor.position, -deletionLength)
         );
     }
 
