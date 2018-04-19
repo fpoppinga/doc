@@ -1,11 +1,12 @@
 import { Doc } from "../../lib/doc";
 import { CommandDto, TypeCommand } from "../../lib/command";
 import v4 = require("uuid/v4");
-import { EventStore } from "./eventStore";
+import {EventStore, StateTooOldError} from "./eventStore";
 import { EventDto } from "../../lib/event";
 import { Action } from "redux";
-import { CommandAction } from "../actions/documentActions";
+import {CommandAction, FetchEventsAction} from "../actions/documentActions";
 import { EditorClient } from "../api/editorClient";
+import {EventAction} from '../actions/eventActions';
 
 export interface EditorState {
     readonly cursor: string;
@@ -16,18 +17,11 @@ export interface EditorState {
 
 const cursorId = v4();
 
-const initialEvent = {
-    id: "init",
-    sequence: -Infinity,
-    cursorId,
-    command: { type: "TYPE", char: "Hello, World!" } as TypeCommand
-};
-
 const initialState: EditorState = {
     cursor: cursorId,
-    appliedEvents: [initialEvent],
+    appliedEvents: [],
     optimisticEvents: [],
-    doc: new EventStore([initialEvent]).state
+    doc: new EventStore([]).state
 };
 
 export function editorReducer(
@@ -51,6 +45,26 @@ export function editorReducer(
                     eventStore.removeOptimisticEvent(commandAction.payload);
                     break;
             }
+
+            return {
+                ...state,
+                appliedEvents: eventStore.appliedEvents,
+                optimisticEvents: eventStore.optimisticEvents,
+                doc: eventStore.optimisticState
+            };
+        case "EVENT":
+            const eventAction = action as EventAction;
+            eventStore.update(eventAction.payload);
+
+            return {
+                ...state,
+                appliedEvents: eventStore.appliedEvents,
+                optimisticEvents: eventStore.optimisticEvents,
+                doc: eventStore.optimisticState
+            };
+        case "FETCH_EVENTS":
+            const fetchAction = action as FetchEventsAction;
+            eventStore.merge(fetchAction.payload.events);
 
             return {
                 ...state,

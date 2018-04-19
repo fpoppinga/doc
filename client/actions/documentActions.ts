@@ -8,15 +8,16 @@ import {
 import { OptimisticAction } from "../middleware/asyncAction";
 import { EditorClient } from "../api/editorClient";
 import { RootState } from "../reducers";
-import { Dispatch } from "redux";
+import {Action, Dispatch} from "redux";
 import { v4 } from "uuid";
 import { ThunkAction } from "redux-thunk";
+import {EventDto} from '../../lib/event';
 
 export interface CommandAction extends OptimisticAction<CommandDto> {
     type: "COMMAND";
 }
 
-const editorClient = new EditorClient(process.env["BASE_URL"]);
+const editorClient = new EditorClient(`http://${window.location.hostname}:8080`);
 
 function commandAction(
     command: Command
@@ -57,4 +58,25 @@ export function deleteText(length: number) {
         type: "DELETE",
         length
     } as DeleteCommand);
+}
+
+
+export interface FetchEventsAction extends Action {
+    type: "FETCH_EVENTS";
+    payload: {
+        events: EventDto[]
+    };
+}
+
+export function fetchEventsAction(since: number): ThunkAction<void, RootState, void> {
+    return (dispatch: Dispatch<RootState>) => {
+        editorClient.getEventsSince(since).then(events =>
+            dispatch<FetchEventsAction>({
+                type: "FETCH_EVENTS",
+                payload: {
+                    events
+                }
+            })
+        );
+    }
 }

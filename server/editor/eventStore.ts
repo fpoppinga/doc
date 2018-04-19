@@ -5,7 +5,7 @@ export interface EventStore {
     push(command: CommandDto): Promise<EventDto>;
     clear(): Promise<void>;
     getAll(): Promise<EventDto[]>;
-    getSince(id: string): Promise<EventDto[]>;
+    getSince(sequence: number): Promise<EventDto[]>;
 }
 
 export class InMemoryEventStore implements EventStore {
@@ -26,13 +26,7 @@ export class InMemoryEventStore implements EventStore {
         return Promise.resolve(this.memory);
     }
 
-    async getSince(id: string): Promise<EventDto[]> {
-        const from = this.memory.findIndex(e => e.id === id);
-
-        if (from < 0) {
-            return Promise.resolve([]);
-        }
-
-        return Promise.resolve(this.memory.slice(from + 1));
+    getSince(sequence: number): Promise<EventDto[]> {
+        return Promise.resolve(this.memory.slice(sequence + 1));
     }
 }

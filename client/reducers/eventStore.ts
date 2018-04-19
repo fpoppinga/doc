@@ -3,6 +3,16 @@ import { createEvent, EventDto } from "../../lib/event";
 import { Doc } from "../../lib/doc";
 import { aggregate } from "../../lib/aggregator";
 
+export class StateTooOldError implements Error {
+    constructor(readonly lastEvent: number) {
+        this.name = "StateTooOldError";
+        this.message = `State is too old. Last event sequence: ${lastEvent}.`;
+    }
+
+    name: string;
+    message: string;
+}
+
 export class EventStore {
     constructor(
         readonly appliedEvents: EventDto[],
@@ -38,8 +48,19 @@ export class EventStore {
             return;
         }
 
+        const lastEvent = this.appliedEvents.length > 0 ? this.appliedEvents[this.appliedEvents.length - 1].sequence : 0;
+        if (event.sequence !== lastEvent + 1) {
+            return;
+        }
+
         this.removeOptimisticEvent(event);
         this.appliedEvents.push(event);
+    }
+
+    merge(events: EventDto[]) {
+        for (const event of events) {
+            this.update(event);
+        }
     }
 
     get optimisticEvents(): CommandDto[] {

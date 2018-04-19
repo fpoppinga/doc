@@ -38,13 +38,10 @@ function testEventStore(name: string, eventStore: EventStore) {
             await eventStore.push(testCommand("b"));
             await eventStore.push(testCommand("c"));
 
-            const latestEvents = await eventStore.getSince("a");
+            const latestEvents = await eventStore.getSince(0);
             expect(latestEvents.map(e => e.id)).toEqual(["b", "c"]);
 
-            const noEvents = await eventStore.getSince("Banana");
-            expect(noEvents.length).toBe(0);
-
-            const tooLateEvents = await eventStore.getSince("c");
+            const tooLateEvents = await eventStore.getSince(2);
             expect(tooLateEvents.length).toBe(0);
         });
     });
