@@ -48,7 +48,10 @@ export class EventStore {
             return;
         }
 
-        const lastEvent = this.appliedEvents.length > 0 ? this.appliedEvents[this.appliedEvents.length - 1].sequence : 0;
+        const lastEvent =
+            this.appliedEvents.length > 0
+                ? this.appliedEvents[this.appliedEvents.length - 1].sequence
+                : 0;
         if (event.sequence !== lastEvent + 1) {
             return;
         }

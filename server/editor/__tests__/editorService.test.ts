@@ -2,7 +2,7 @@ import { EditorService, InvalidCommandError } from "../editorService";
 import { InMemoryEventStore } from "../eventStore";
 import { CommandDto } from "../../../lib/command";
 import { v4 } from "uuid";
-import {WsMessagingService} from '../messagingService';
+import { WsMessagingService } from "../messagingService";
 
 jest.mock("../eventStore");
 jest.mock("../validator");
@@ -21,7 +21,10 @@ function testCommand(): CommandDto {
 
 describe("EditorService", () => {
     it("validates incoming commands", async () => {
-        const service = new EditorService(new InMemoryEventStore(), new WsMessagingService(4242));
+        const service = new EditorService(
+            new InMemoryEventStore(),
+            new WsMessagingService(4242)
+        );
         validator.isValid.mockReturnValue(true);
 
         await service.consume(testCommand());
@@ -61,7 +64,7 @@ describe("EditorService", () => {
         validator.isValid.mockReturnValue(true);
         const command = testCommand();
 
-        const event = {...command, sequence: 42};
+        const event = { ...command, sequence: 42 };
         jest.spyOn(store, "push").mockReturnValue(event);
 
         await service.consume(command);

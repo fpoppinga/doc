@@ -1,12 +1,12 @@
 import { Doc } from "../../lib/doc";
 import { CommandDto, TypeCommand } from "../../lib/command";
 import v4 = require("uuid/v4");
-import {EventStore, StateTooOldError} from "./eventStore";
+import { EventStore, StateTooOldError } from "./eventStore";
 import { EventDto } from "../../lib/event";
 import { Action } from "redux";
-import {CommandAction, FetchEventsAction} from "../actions/documentActions";
+import { CommandAction, FetchEventsAction } from "../actions/documentActions";
 import { EditorClient } from "../api/editorClient";
-import {EventAction} from '../actions/eventActions';
+import { EventAction } from "../actions/eventActions";
 
 export interface EditorState {
     readonly cursor: string;

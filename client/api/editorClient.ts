@@ -1,5 +1,5 @@
 import { CommandDto } from "../../lib/command";
-import {EventDto} from '../../lib/event';
+import { EventDto } from "../../lib/event";
 
 export class EditorClient {
     constructor(private baseUrl: string = "http://localhost:8080") {}
@@ -26,7 +26,9 @@ export class EditorClient {
 
     async getEventsSince(since: number): Promise<EventDto[]> {
         try {
-            const res = await fetch(this.baseUrl + "/events/" + since.toString());
+            const res = await fetch(
+                this.baseUrl + "/events/" + since.toString()
+            );
 
             if (!res.ok) {
                 return Promise.reject(await res.json());

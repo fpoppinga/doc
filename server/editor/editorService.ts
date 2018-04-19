@@ -2,7 +2,7 @@ import { EventStore } from "./eventStore";
 import { CommandDto } from "../../lib/command";
 import { isValid } from "./validator";
 import { EventDto } from "../../lib/event";
-import {MessagingService} from './messagingService';
+import { MessagingService } from "./messagingService";
 
 export class InvalidCommandError extends Error {
     constructor(command: CommandDto) {
@@ -11,7 +11,10 @@ export class InvalidCommandError extends Error {
 }
 
 export class EditorService {
-    constructor(private store: EventStore, private messagingService: MessagingService) {}
+    constructor(
+        private store: EventStore,
+        private messagingService: MessagingService
+    ) {}
 
     async consume(command: CommandDto) {
         if (!isValid(command)) {

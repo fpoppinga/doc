@@ -1,6 +1,6 @@
-import {EventDto} from '../../lib/event';
-import io, {Server, Socket} from "socket.io";
-import {v4} from "uuid";
+import { EventDto } from "../../lib/event";
+import io, { Server, Socket } from "socket.io";
+import { v4 } from "uuid";
 
 export interface MessagingService {
     publish(event: EventDto): Promise<void>;
@@ -26,6 +26,8 @@ export class WsMessagingService implements MessagingService {
     }
 
     async publish(event: EventDto): Promise<void> {
-        [...this.sockets.values()].forEach(ws => ws.emit("event", JSON.stringify(event)));
+        [...this.sockets.values()].forEach(ws =>
+            ws.emit("event", JSON.stringify(event))
+        );
     }
 }

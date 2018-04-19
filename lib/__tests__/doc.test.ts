@@ -110,10 +110,10 @@ describe("Doc", () => {
             const nextDoc = doc.deleteAt("cursor", 16);
 
             expect([...nextDoc.cursors.entries()]).toEqual([
-                ["before", {position: 0}],
-                ["cursor", {position: 0}],
-                ["after", {position: 8}]
-            ])
+                ["before", { position: 0 }],
+                ["cursor", { position: 0 }],
+                ["after", { position: 8 }]
+            ]);
         });
 
         it("can delete more text than there actually is.", () => {
