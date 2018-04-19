@@ -9,7 +9,8 @@ const extractSass = new ExtractTextPlugin({
 
 module.exports = {
     entry: {
-        bundle: "./index.tsx"
+        bundle: "./index.tsx",
+        sw: "../serviceworker/sw.ts"
     },
     context: __dirname,
     module: {
