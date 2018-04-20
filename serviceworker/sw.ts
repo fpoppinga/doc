@@ -1,46 +1,78 @@
-const version = "v3";
+const version = "v4";
 
-interface ExtendableEvent extends Event {
+declare interface ExtendableEvent extends Event {
     waitUntil(fn: Promise<any>): void;
 }
 
 self.addEventListener("install", (event: Event) => {
     const installEvent = event as ExtendableEvent;
-
-    console.info("Installed!");
-    installEvent.waitUntil((async () => {
-            const cache = await caches.open(version);
-            await cache.addAll([
-                "/bundle.js",
-                "/index.html",
-                "/bundle.css"
-            ]);
-
-            console.info("Cached!");
-            (self as any).skipWaiting();
-        })())
-
+    installEvent.waitUntil(preCache());
 });
 
 self.addEventListener("fetch", (event: Event) => {
     const fetchEvent = event as FetchEvent;
-
-    console.info("fetch", fetchEvent);
     const request = fetchEvent.request.clone();
+
     fetchEvent.respondWith((async () => {
         if (request.method !== "GET") {
-            return fetch(request);
+            return proxy(request);
         }
 
-        const cache = await caches.open(version);
-
-        const cached = await cache.match(request);
+        const cached = await fromCache(request);
         if (cached) {
             return cached;
         }
 
-        const network = await fetch(request.clone());
-        await cache.put(request.clone(), network.clone());
-        return network;
+        return fetchAndUpdate(request.clone());
     })());
 });
+
+async function preCache(): Promise<void> {
+    const cache = await caches.open(version);
+    return cache.addAll([
+        "/bundle.js",
+        "/index.html",
+        "/bundle.css"
+    ]);
+}
+
+async function fromCache(request: Request): Promise<Response | undefined> {
+    const cache = await caches.open(version);
+    return cache.match(request);
+}
+
+async function fetchAndUpdate(request: Request): Promise<Response> {
+    const fromNetwork = await fetch(request);
+
+    if (fromNetwork.ok) {
+        const cache = await caches.open(version);
+        await cache.put(request.clone(), fromNetwork.clone());
+    }
+
+    return fromNetwork;
+}
+
+let queue: Request[] = [];
+async function proxy(request: Request): Promise<Response> {
+    if (navigator.onLine) {
+        if (queue.length > 0) {
+            for (const entry of queue) {
+                await fetch(entry);
+            }
+
+            queue = [];
+        }
+
+        return fetch(request);
+    }
+
+    const url = new URL(request.url);
+
+    if (request.method === "PUT" && url.pathname === "/event") {
+        console.info("queueing!");
+        queue.push(request.clone());
+        return new Response(null, {status: 204})
+    }
+
+    return fetch(request);
+}
