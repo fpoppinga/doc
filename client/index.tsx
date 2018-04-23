@@ -6,11 +6,14 @@ import { Provider } from "preact-redux";
 import optimisticMiddleware from "./middleware/asyncAction";
 import thunk from "redux-thunk";
 import { EditorSocket } from "./api/editorSocket";
+import {fetchEventsAction} from './actions/documentActions';
 
 const store = createStore(
     rootReducer,
     applyMiddleware(thunk, optimisticMiddleware)
 );
+
+store.dispatch(fetchEventsAction(0));
 
 const editorSocket = new EditorSocket(
     store,
